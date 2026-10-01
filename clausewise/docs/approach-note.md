@@ -1,0 +1,9 @@
+# Implementation Note
+
+Quote verification normalizes Unicode compatibility forms and collapses whitespace, then searches the complete extracted text. The application maps a match back to the source itself, including page boundaries and repeated occurrences, and only then marks it verified. This can still fail when extraction drops or reorders text, when the model's paraphrase is mistaken for a quote, or when unusual PDF text geometry makes the visual overlay imprecise. Quotes that do not match are never emitted as verified citations.
+
+Large documents are extracted page by page, split into overlapping chunks, and ranked across the complete chunk set for each query. The whole index is scanned locally; only the highest-ranked passages are sent to the model. If no passage matches, the app says it could not locate evidence and explicitly avoids claiming that the clause is absent. This is retrieval, not a formal proof that all semantic matches were found.
+
+I chose Part C Option 2, agentic document research. It fits the same retrieval and source-verification path as chat, while keeping the model's context bounded. The agent can search, read a selected section, or list likely headings; tool arguments are validated and the loop stops after four rounds. The hardest part is keeping tool outputs untrusted and preventing malformed calls or partial model results from escaping the verification boundary. Without a provider key, the local demo does not claim to execute an agent loop.
+
+Next I would add OCR and Arabic support, test the agent against multiple real contracts and adversarial tool outputs, improve semantic clause matching, add user authentication and durable encrypted object storage, then deploy a persistent-volume instance and record the requested end-to-end demo.
